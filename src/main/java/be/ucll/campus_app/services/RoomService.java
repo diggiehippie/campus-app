@@ -29,6 +29,14 @@ public class RoomService {
     public Room addRoomToCampus(String campusName, Room room) {
         Campus campus = campusService.getCampusByName(campusName)
                 .orElseThrow(() -> new IllegalArgumentException("Campus niet gevonden."));
+
+        boolean roomExists = campus.getRooms().stream()
+                .anyMatch(existingRoom -> existingRoom.getName().equalsIgnoreCase(room.getName()));
+
+        if (roomExists) {
+            throw new IllegalArgumentException("Lokaal met naam '" + room.getName() + "' bestaat al in deze campus '" + campusName + "'");
+        }
+
         room.setCampus(campus);
         return roomRepository.save(room);
     }

@@ -3,6 +3,11 @@ package be.ucll.campus_app.models;
 import jakarta.persistence.*;
 
 @Entity
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"name", "campus_name"})
+        }
+)
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
