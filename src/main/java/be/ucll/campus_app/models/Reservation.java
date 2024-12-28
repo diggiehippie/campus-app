@@ -27,6 +27,13 @@ public class Reservation {
     )
     private List<Room> rooms;
 
+    @Transient
+    private int totalCapacity;
+
+    public int getTotalCapacity() {
+        return rooms != null ? rooms.stream().mapToInt(Room::getCapacity).sum() : 0;
+    }
+
     public Long getId() {
         return id;
     }

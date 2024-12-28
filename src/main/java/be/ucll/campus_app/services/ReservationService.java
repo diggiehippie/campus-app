@@ -48,9 +48,16 @@ public class ReservationService {
             throw new IllegalArgumentException("De reservatie kan niet in het verleden liggen.");
         }
 
+        int totalCapacity = reservation.getRooms().stream()
+                        .mapToInt(Room::getCapacity)
+                        .sum();
+
+        if (reservation.getUser().getReservations().size() > totalCapacity) {
+            throw new IllegalArgumentException("Het aantal personen overschrijdt de totale capaciteit van de geselecteerde kamers.");
+        }
+
         reservation.setUser(user);
 
-        // Controleer op dubbele boekingen voor de lokalen
         for (Room room : reservation.getRooms()) {
             boolean isRoomOverlapping = reservationRepository.findByRooms_IdAndStartTimeLessThanAndEndTimeGreaterThan(
                     room.getId(),
