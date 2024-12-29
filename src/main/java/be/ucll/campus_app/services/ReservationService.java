@@ -48,17 +48,22 @@ public class ReservationService {
 
         reservation.setRooms(loadedRooms);
 
+        long distinctRoomCount = loadedRooms.stream().map(Room::getId).distinct().count();
+        if (distinctRoomCount != loadedRooms.size()) {
+            throw new IllegalArgumentException("Een reservatie mag geen dubbele lokalen bevatten.");
+        }
+
         int totalCapacity = loadedRooms.stream().mapToInt(Room::getCapacity).sum();
         if (totalCapacity < 1) {
             throw new IllegalArgumentException("De geselecteerde kamers hebben onvoldoende capaciteit.");
         }
 
         for (Room room : loadedRooms) {
-            boolean isRoomOverlapping = reservationRepository.findByRooms_IdAndStartTimeLessThanAndEndTimeGreaterThan(
+            boolean isRoomOverlapping = !reservationRepository.findByRooms_IdAndStartTimeLessThanAndEndTimeGreaterThan(
                     room.getId(),
                     reservation.getEndTime(),
                     reservation.getStartTime()
-            ).size() > 0;
+            ).isEmpty();
 
             if (isRoomOverlapping) {
                 throw new IllegalArgumentException("Lokaal '" + room.getName() + "' is al gereserveerd op dit tijdstip.");
