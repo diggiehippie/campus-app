@@ -39,26 +39,21 @@ public class ReservationService {
     public Reservation addReservation(Long userId, Reservation reservation) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Gebruiker met ID " + userId + " niet gevonden"));
-
-        if (reservation.getStartTime().isAfter(reservation.getEndTime())) {
-            throw new IllegalArgumentException("De begintijd moet voor de eindtijd liggen.");
-        }
-
-        if (reservation.getEndTime().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("De reservatie kan niet in het verleden liggen.");
-        }
-
-        int totalCapacity = reservation.getRooms().stream()
-                        .mapToInt(Room::getCapacity)
-                        .sum();
-
-        if (reservation.getUser().getReservations().size() > totalCapacity) {
-            throw new IllegalArgumentException("Het aantal personen overschrijdt de totale capaciteit van de geselecteerde kamers.");
-        }
-
         reservation.setUser(user);
 
-        for (Room room : reservation.getRooms()) {
+        List<Room> loadedRooms = reservation.getRooms().stream()
+                .map(room -> roomRepository.findById(room.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Room met ID " + room.getId() + " bestaat niet.")))
+                .toList();
+
+        reservation.setRooms(loadedRooms);
+
+        int totalCapacity = loadedRooms.stream().mapToInt(Room::getCapacity).sum();
+        if (totalCapacity < 1) {
+            throw new IllegalArgumentException("De geselecteerde kamers hebben onvoldoende capaciteit.");
+        }
+
+        for (Room room : loadedRooms) {
             boolean isRoomOverlapping = reservationRepository.findByRooms_IdAndStartTimeLessThanAndEndTimeGreaterThan(
                     room.getId(),
                     reservation.getEndTime(),
@@ -66,7 +61,7 @@ public class ReservationService {
             ).size() > 0;
 
             if (isRoomOverlapping) {
-                throw new IllegalArgumentException("Room '" + room.getName() + "' is already reserved during this time.");
+                throw new IllegalArgumentException("Lokaal '" + room.getName() + "' is al gereserveerd op dit tijdstip.");
             }
         }
 

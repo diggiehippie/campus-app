@@ -13,8 +13,10 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
     private String type;
+    @Column(nullable = false)
     private int capacity;
     private String contactName;
     private int floor;

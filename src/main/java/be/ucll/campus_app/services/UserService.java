@@ -24,14 +24,14 @@ public class UserService {
     public User addUser(User user) {
         // Controleer of e-mail al bestaat
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists: " + user.getEmail());
+            throw new IllegalArgumentException("Emailadres bestaat al: " + user.getEmail());
         }
         return userRepository.save(user);
     }
 
     public User updateUser(Long id, User updatedUser) {
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Gebruiker met ID " + id + " niet gevonden."));
 
         // Update de velden
         existingUser.setFirstName(updatedUser.getFirstName());
@@ -44,7 +44,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("User not found with ID: " + id);
+            throw new IllegalArgumentException("Gebruiker met ID " + id + " niet gevonden.");
         }
         userRepository.deleteById(id);
     }
