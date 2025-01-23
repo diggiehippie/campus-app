@@ -34,11 +34,11 @@ public class CampusController {
 
     @DeleteMapping("/{name}")
     public ResponseEntity<Void> deleteCampus(@PathVariable String name) {
-        if (campusService.getCampusByName(name).isPresent()) {
-            campusService.deleteCampus(name);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return campusService.getCampusByName(name)
+                .map(existingCampus -> {
+                    campusService.deleteCampus(name);
+                    return ResponseEntity.noContent().<Void>build();
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

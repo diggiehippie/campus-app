@@ -22,9 +22,8 @@ public class UserService {
     }
 
     public User addUser(User user) {
-        // Controleer of e-mail al bestaat
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Emailadres bestaat al: " + user.getEmail());
+            throw new IllegalArgumentException("E-mailadres bestaat al: " + user.getEmail());
         }
         return userRepository.save(user);
     }
@@ -33,7 +32,10 @@ public class UserService {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Gebruiker met ID " + id + " niet gevonden."));
 
-        // Update de velden
+        if (!existingUser.getEmail().equals(updatedUser.getEmail()) && userRepository.findByEmail(updatedUser.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("E-mailadres bestaat al: " + updatedUser.getEmail());
+        }
+
         existingUser.setFirstName(updatedUser.getFirstName());
         existingUser.setLastName(updatedUser.getLastName());
         existingUser.setBirthDate(updatedUser.getBirthDate());

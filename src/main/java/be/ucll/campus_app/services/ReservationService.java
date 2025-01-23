@@ -9,7 +9,6 @@ import be.ucll.campus_app.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +27,10 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public Optional<Reservation> getReservationById(Long reservationId) {
+        return reservationRepository.findById(reservationId);
+    }
+
     public List<Reservation> getReservationsByUser(Long userId) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
@@ -40,6 +43,10 @@ public class ReservationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Gebruiker met ID " + userId + " niet gevonden"));
         reservation.setUser(user);
+
+        if (reservation.getStartTime().isAfter(reservation.getEndTime())) {
+            throw new IllegalArgumentException("Starttijd moet voor de eindtijd komen.");
+        }
 
         List<Room> loadedRooms = reservation.getRooms().stream()
                 .map(room -> roomRepository.findById(room.getId())
@@ -73,7 +80,6 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    // Verwijder een reservatie
     public void deleteReservation(Long reservationId) {
         if (!reservationRepository.existsById(reservationId)) {
             throw new IllegalArgumentException("Reservation not found with ID: " + reservationId);

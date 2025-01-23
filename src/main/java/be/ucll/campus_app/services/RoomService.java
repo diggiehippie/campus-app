@@ -21,6 +21,10 @@ public class RoomService {
         return roomRepository.findAll();
     }
 
+    public Optional<Room> getRoomById(Long roomId) {
+        return roomRepository.findById(roomId);
+    }
+
     public List<Room> getRoomsByCampus(String campusName) {
         Optional<Campus> campus = campusService.getCampusByName(campusName);
         return campus.map(Campus::getRooms).orElseThrow(() -> new IllegalArgumentException("Campus niet gevonden."));
@@ -34,7 +38,8 @@ public class RoomService {
                 .anyMatch(existingRoom -> existingRoom.getName().equalsIgnoreCase(room.getName()));
 
         if (roomExists) {
-            throw new IllegalArgumentException("Lokaal met naam '" + room.getName() + "' bestaat al in deze campus '" + campusName + "'");
+            throw new IllegalArgumentException("Lokaal met naam '" + room.getName() + "' bestaat al in deze campus '"
+                    + campusName + "'");
         }
 
         room.setCampus(campus);
@@ -42,6 +47,9 @@ public class RoomService {
     }
 
     public void deleteRoom(Long roomId) {
+        if (!roomRepository.existsById(roomId)) {
+            throw new IllegalArgumentException("Room met ID " + roomId + " niet gevonden.");
+        }
         roomRepository.deleteById(roomId);
     }
 }
