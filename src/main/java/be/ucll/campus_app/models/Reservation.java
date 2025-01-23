@@ -1,6 +1,8 @@
 package be.ucll.campus_app.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,8 +13,12 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @FutureOrPresent
     private LocalDateTime startTime;
+
+    @Future
     private LocalDateTime endTime;
+
     private String comment;
 
     @ManyToOne

@@ -22,7 +22,7 @@ public class RoomController {
     @PostMapping
     public ResponseEntity<Room> addRoomToCampus(@PathVariable String campusName, @RequestBody Room room) {
         Room createdRoom = roomService.addRoomToCampus(campusName, room);
-        return ResponseEntity.ok(createdRoom);
+        return ResponseEntity.status(201).body(createdRoom);
     }
 
     @DeleteMapping("/{roomId}")

@@ -1,23 +1,24 @@
 package be.ucll.campus_app.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"name", "campus_name"})
-        }
-)
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
+    @NotBlank
     private String name;
+
     private String type;
-    @Column(nullable = false)
+
+    @Min(1)
     private int capacity;
+
     private String contactName;
     private int floor;
 

@@ -1,18 +1,21 @@
 package be.ucll.campus_app.models;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
 @Entity
 public class Campus {
     @Id
+    @NotBlank
     private String name;
 
+    @NotBlank
     private String address;
+
+    @Min(0)
     private int parkingSpaces;
 
     @OneToMany(mappedBy = "campus", cascade = CascadeType.ALL, orphanRemoval = true)

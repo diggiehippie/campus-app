@@ -29,7 +29,7 @@ public class CampusController {
     @PostMapping
     public ResponseEntity<Campus> addCampus(@RequestBody Campus campus) {
         Campus createdCampus = campusService.addCampus(campus);
-        return ResponseEntity.ok(createdCampus);
+        return ResponseEntity.status(201).body(createdCampus);
     }
 
     @DeleteMapping("/{name}")

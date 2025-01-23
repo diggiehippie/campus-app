@@ -1,6 +1,9 @@
 package be.ucll.campus_app.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,11 +14,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String firstName;
+    @NotBlank
     private String lastName;
+    @Past
     private LocalDate birthDate;
 
     @Column(unique = true, nullable = false)
+    @NotBlank
+    @Email
     private String email;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
